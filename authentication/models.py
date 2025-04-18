@@ -20,13 +20,13 @@ class User(AbstractUser):
                            null=False, 
                            blank=False, 
                            choices=DCC_CHOICES,
-
                            help_text='The primary DCC package used by the user',
                            )
     
     bio = models.TextField(
         null=True,
         blank=True,
+        max_length=240,
         help_text='Users bio. Can be thought of as a short description of the user',
     )
 
@@ -68,6 +68,28 @@ class User(AbstractUser):
         choices=ROLE_CHOICES,
         help_text='Users role',
     )
+
+    email = models.EmailField(
+        unique=True,
+        null=False,
+        blank=False,
+        help_text='Users email',
+    )
+
+    first_name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        help_text='Users first name',
+    )
+
+    last_name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        help_text='Users last name',
+    )
+    
 
     def __str__(self):
         return self.username
