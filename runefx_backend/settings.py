@@ -92,6 +92,11 @@ TEMPLATES = [
     },
 ]
 
+DATABASES={
+    
+}
+
+
 WSGI_APPLICATION = 'runefx_backend.wsgi.application'
 
 

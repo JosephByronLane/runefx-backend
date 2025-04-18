@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 import re
-
+import json
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
@@ -107,7 +107,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+            raise serializers.ValidationError({"status": "error", "message": "Password fields didn't match."})
+        
+        if User.objects.filter(email=attrs['email']).exists():
+            raise serializers.ValidationError({"status": "error", "message": "Email already exists."})
+        
+        if User.objects.filter(username=attrs['username']).exists():
+            raise serializers.ValidationError({"status": "error", "message": "Username already exists."})
+        
         return attrs
     
     def create(self, validated_data):
