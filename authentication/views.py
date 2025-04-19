@@ -11,6 +11,7 @@ from .serializers import RegisterSerializer, UserSerializer
 from rest_framework import permissions
 from runefx_backend import settings
 from datetime import datetime
+from rest_framework_simplejwt.authentication import JWTAuthentication
 # Create your views here.
 
 User = get_user_model()
@@ -34,6 +35,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
 
     permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (JWTAuthentication,)
     serializer_class = UserSerializer
     def get_object(self):
         return self.request.user
@@ -89,7 +91,6 @@ class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         #by default, django gets the refresh tokens from the body, but we are sending cookies instead
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-
         if not refresh_token:
             return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
 
