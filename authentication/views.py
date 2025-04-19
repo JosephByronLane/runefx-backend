@@ -79,3 +79,27 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             response.data['message'] = "Authentication successful"
 
             return super().finalize_response(request, response, *args, **kwargs)
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def finalize_response(self, request, response, *args, **kwargs):
+        if response.status_code == 200:
+            access_token = response.data.get('access')
+
+            response.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+                value=access_token,
+                expires=datetime.now() + settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+            )
+
+            if 'access' in response.data:
+                del response.data['access']
+
+            response.data['message'] = "Token refreshed successfully"
+
+            return super().finalize_response(request, response, *args, **kwargs)
+
