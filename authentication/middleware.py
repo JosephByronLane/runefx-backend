@@ -3,6 +3,7 @@ from runefx_backend import settings
 from django.contrib.auth.models import AnonymousUser
 from django.utils.functional import SimpleLazyObject
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.renderers import JSONRenderer
 
 class JWTCookieMiddleware(MiddlewareMixin):
     def __init__(self, get_response):
@@ -15,7 +16,6 @@ class JWTCookieMiddleware(MiddlewareMixin):
         if access_token:
             request.META['HTTP_AUTHORIZATION'] = f"Bearer {access_token}"
 
-
-
         response = self.get_response(request)
         return response
+    

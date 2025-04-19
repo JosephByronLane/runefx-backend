@@ -34,8 +34,6 @@ class RegisterView(generics.CreateAPIView):
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
 
-    permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (JWTAuthentication,)
     serializer_class = UserSerializer
     def get_object(self):
         return self.request.user
@@ -74,13 +72,6 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             )
 
-            #removing tokens from body, keeping them in there removes the point of having them in the cookies lmao
-            if 'refresh' in response.data:
-                del response.data['refresh']
-
-            if 'access' in response.data:
-                del response.data['access']
-
             response.data['message'] = "Authentication successful"
 
             return super().finalize_response(request, response, *args, **kwargs)
@@ -89,7 +80,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 class CookieTokenRefreshView(TokenRefreshView):
     
     def post(self, request, *args, **kwargs):
-        #by default, django gets the refresh tokens from the body, but we are sending cookies instead
+        #only access to ken is handled in the middleware, refresh tokens need cookie access directly
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
         if not refresh_token:
             return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
@@ -112,8 +103,6 @@ class CookieTokenRefreshView(TokenRefreshView):
                 path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             )
 
-            if 'access' in response.data:
-                del response.data['access']
 
             response.data['message'] = "Token refreshed successfully"
 
