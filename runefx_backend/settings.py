@@ -64,13 +64,15 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
 
-
+    #NOTE: THESE ARE NOT APPLIED AUTOMATICALLY,
+    # WE ACTUALLY CALL THEM IN THE CookieTokenObtainPairView VIEW
     'AUTH_COOKIE_SECURE': not config.PRODUCTION,
     'AUTH_COOKIE_HTTP_ONLY': not config.PRODUCTION,
     'AUTH_COOKIE_PATH': '/',
     'AUTH_COOKIE_SAMESITE': 'Lax',
     'AUTH_COOKIE': 'access_token',
     'AUTH_COOKIE_REFRESH': 'refresh_token',
+    
 
 }
 
