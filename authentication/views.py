@@ -69,10 +69,13 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             )
 
-            if 'refresh' in request.data:
-                del request.data['refresh']
+            #removing tokens from body, keeping them in there removes the point of having them in the cookies lmao
+            if 'refresh' in response.data:
+                del response.data['refresh']
 
-            if 'access' in request.data:
-                del request.data['access']
+            if 'access' in response.data:
+                del response.data['access']
+
+            response.data['message'] = "Authentication successful"
 
             return super().finalize_response(request, response, *args, **kwargs)
