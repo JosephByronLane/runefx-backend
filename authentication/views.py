@@ -44,6 +44,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
     # and finally before returning the response it calls finalize_response
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 200:
+
+            
             access_token = response.data.get('access')
             refresh_token = response.data.get('refresh')
 
@@ -82,6 +84,18 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
+
+    def post(self, request, *args, **kwargs):
+
+        refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+
+        if not refresh_token:
+            return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.data['refresh'] = refresh_token
+
+        return super().post(request, *args, **kwargs)
+
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 200:
             access_token = response.data.get('access')
@@ -101,5 +115,4 @@ class CookieTokenRefreshView(TokenRefreshView):
 
             response.data['message'] = "Token refreshed successfully"
 
-            return super().finalize_response(request, response, *args, **kwargs)
-
+        return super().finalize_response(request, response, *args, **kwargs)
