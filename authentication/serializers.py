@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 import re
 import json
 User = get_user_model()
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.tokens import AccessToken
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -110,10 +112,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"status": "error", "message": "Password fields didn't match."})
         
         if User.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError({"status": "error", "message": "Email already exists."})
+            raise serializers.ValidationError({"status": "error", "message": "Email already in use."})
         
         if User.objects.filter(username=attrs['username']).exists():
-            raise serializers.ValidationError({"status": "error", "message": "Username already exists."})
+            raise serializers.ValidationError({"status": "error", "message": "Username already in use."})
         
         return attrs
     
@@ -125,3 +127,28 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
         
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        user = self.user
+        data['user'] = UserSerializer(user).data
+        
+        return data
+
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        access_token = data.get('access')
+        if access_token:
+            token_data = AccessToken(access_token)
+            user_id = token_data['user_id']
+            
+            try:
+                user = User.objects.get(id=user_id)
+                data['user'] = UserSerializer(user).data
+            except User.DoesNotExist:
+                pass
+        
+        return data

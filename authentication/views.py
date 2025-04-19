@@ -12,6 +12,7 @@ from rest_framework import permissions
 from runefx_backend import settings
 from datetime import datetime
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
 # Create your views here.
 
 User = get_user_model()
@@ -31,6 +32,7 @@ class RegisterView(generics.CreateAPIView):
             "message": "User registered successfully"
         }, status=status.HTTP_201_CREATED)
 
+
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
 
@@ -40,6 +42,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     
 
 class CookieTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
     # url queries api -> request routed to CookieTokenObtainPairView
     # then the parent class TokenObtainPairView answers the request
     # and finally before returning the response it calls finalize_response
@@ -78,7 +81,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
-    
+    serializer_class = CustomTokenRefreshSerializer
     def post(self, request, *args, **kwargs):
         #only access to ken is handled in the middleware, refresh tokens need cookie access directly
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
@@ -102,7 +105,6 @@ class CookieTokenRefreshView(TokenRefreshView):
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
                 path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             )
-
 
             response.data['message'] = "Token refreshed successfully"
 
@@ -128,6 +130,3 @@ class CookieTokenLogoutView(APIView):
             return response
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-            
-
