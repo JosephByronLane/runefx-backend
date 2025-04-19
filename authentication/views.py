@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
 from rest_framework import permissions
@@ -84,9 +85,9 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
-
+    
     def post(self, request, *args, **kwargs):
-
+        #by default, django gets the refresh tokens from the body, but we are sending cookies instead
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
 
         if not refresh_token:
@@ -116,3 +117,27 @@ class CookieTokenRefreshView(TokenRefreshView):
             response.data['message'] = "Token refreshed successfully"
 
         return super().finalize_response(request, response, *args, **kwargs)
+
+
+class CookieTokenLogoutView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+
+            if not refresh_token:
+                return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+
+            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'], path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'])
+            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'], path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'])
+
+            return response
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            
+
