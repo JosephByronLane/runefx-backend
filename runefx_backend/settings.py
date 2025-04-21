@@ -73,7 +73,7 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_SECURE': config.PRODUCTION,
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_PATH': '/',
-    'AUTH_COOKIE_SAMESITE': 'Lax',
+    'AUTH_COOKIE_SAMESITE': 'None' if not config.PRODUCTION else 'Lax',
     'AUTH_COOKIE': 'access_token',
     'AUTH_COOKIE_REFRESH': 'refresh_token',
 
