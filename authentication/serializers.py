@@ -2,10 +2,12 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 import re
 import json
-User = get_user_model()
+
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import AccessToken
 
+
+User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

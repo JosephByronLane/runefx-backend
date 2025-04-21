@@ -36,6 +36,7 @@ class RegisterView(generics.CreateAPIView):
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
 
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
     def get_object(self):
         return self.request.user
@@ -77,8 +78,17 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
             response.data['message'] = "Authentication successful"
 
-            return super().finalize_response(request, response, *args, **kwargs)
-
+        
+        elif response.status_code == 401:
+            # we handle the auth response type as message and user in the frontend
+            detail_message = ''
+            if response.data['detail']:
+                detail_message = response.data['detail']
+                del response.data['detail']
+            response.data['user'] = {}
+            response.data['message'] = detail_message
+        
+        return super().finalize_response(request, response, *args, **kwargs)
 
 class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CustomTokenRefreshSerializer
