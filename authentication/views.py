@@ -42,6 +42,8 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         return self.request.user
     
     def retrieve(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+        print(f"Refresh - Token hash: {hash(refresh_token)}")
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
@@ -84,7 +86,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
-                path=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             )
 
             response.data['message'] = "Authentication successful"
@@ -103,10 +105,11 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CustomTokenRefreshSerializer
+    print("test")
     def post(self, request, *args, **kwargs):
         #only access to ken is handled in the middleware, refresh tokens need cookie access directly
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-        print(refresh_token)
+        print(f"Refresh - Token hash: {hash(refresh_token)}")        
         if not refresh_token:
             return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -139,18 +142,43 @@ class CookieTokenLogoutView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-
+            print(f"Logout - Token hash: {refresh_token}")
             if not refresh_token:
                 return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
 
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-            response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+            #no user but we still need to compy with IUser interface on the front-end
+            response = Response({"message": "Logout successful", "user":{}}, status=status.HTTP_200_OK)
 
-            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'], path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'])
-            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'], path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'])
+            print(f"Deleting cookie {settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH']}")
+            print(f"Path: {settings.SIMPLE_JWT['AUTH_COOKIE_PATH']}")
+            
+            # Explicitly set cookies with expiry in the past to force deletion
+            response.set_cookie(
+                settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'], 
+                '', 
+                max_age=0, 
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+                domain=None,  # Use the same domain as when setting
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+            )
+            
+            response.set_cookie(
+                settings.SIMPLE_JWT['AUTH_COOKIE'], 
+                '', 
+                max_age=0, 
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+                domain=None,  # Use the same domain as when setting
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+            )
 
             return response
         except Exception as e:
+            print(e)
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
