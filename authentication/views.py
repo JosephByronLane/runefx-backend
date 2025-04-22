@@ -14,7 +14,7 @@ from datetime import datetime
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
 # Create your views here.
-
+from django.shortcuts import get_object_or_404
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -40,6 +40,17 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     def get_object(self):
         return self.request.user
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        response_data = {
+            'message' : 'User recieved correctly',
+            'user': serializer.data
+        }
+
+        return Response(response_data)
     
 
 class CookieTokenObtainPairView(TokenObtainPairView):
@@ -119,7 +130,6 @@ class CookieTokenRefreshView(TokenRefreshView):
             response.data['message'] = "Token refreshed successfully"
 
         return super().finalize_response(request, response, *args, **kwargs)
-
 
 class CookieTokenLogoutView(APIView):
     def post(self, request, *args, **kwargs):
