@@ -11,7 +11,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'profile_picture', 'role', 'bio', 'dcc']
+        fields = ['username', 'email', 'first_name', 'last_name', 'profile_picture_url', 'role', 'bio', 'dcc']
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -59,21 +59,25 @@ class RegisterSerializer(serializers.ModelSerializer):
         write_only=True,
         required=True,
         style={'input_type': 'password'},
+        min_length=7,
         error_messages={
             'required': 'Password is required',
             'blank': 'Password is required',
             'invalid': 'Password is invalid',
-            'min_length': 'Password must be at least 8 characters long',
+            'min_length': 'Password must be at least 7 characters long',
         }
     )
     password2 = serializers.CharField(
         write_only=True, 
         required=True,
         style={'input_type': 'password'},
+        min_length=7,
         error_messages={
             'required': 'Password confirmation is required',
             'blank': 'Password confirmation is required',
             'invalid': 'Password confirmation is invalid',
+            'min_length': 'Password must be at least 7 characters long',
+
         }
     )
 
@@ -105,14 +109,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
     )
     
-    profile_picture = serializers.CharField(
+    profile_picture_url = serializers.CharField(
         required=False,
         style={'input_type': 'text'}
     )
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'password2', 'email', 'first_name', 'last_name', 'dcc']
+        fields = ['username', 'password', 'password2', 'email', 'first_name', 'last_name', 'dcc', 'profile_picture_url']
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -129,7 +133,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         validated_data['role'] = 'user'
-        validated_data['profile_picture'] = 'https://i.imgur.com/nrK3z15.png' #default profile pic location
+        validated_data['profile_picture_url'] = 'https://i.imgur.com/nrK3z15.png' #default profile pic location
         user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()

@@ -48,8 +48,7 @@ class User(AbstractUser):
         #final filepath is MEDIA_ROOT/users/user_id/profile_pictures/filename
         return f'users/{instance.id}/profile_pictures/{filename}'
     
-    profile_picture = models.ImageField(
-        upload_to=user_profile_picture_path,
+    profile_picture_url = models.CharField(
         null=True,
         blank=True,
         help_text='Users profile picture',
