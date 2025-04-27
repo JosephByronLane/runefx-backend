@@ -105,6 +105,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
     )
     
+    profile_picture = serializers.CharField(
+        required=False,
+        style={'input_type': 'text'}
+    )
+
     class Meta:
         model = User
         fields = ['username', 'password', 'password2', 'email', 'first_name', 'last_name', 'dcc']
@@ -124,6 +129,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         validated_data['role'] = 'user'
+        validated_data['profile_picture'] = 'https://i.imgur.com/nrK3z15.png' #default profile pic location
         user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
