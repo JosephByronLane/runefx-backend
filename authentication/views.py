@@ -105,7 +105,6 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CustomTokenRefreshSerializer
-    print("test")
     def post(self, request, *args, **kwargs):
         #only access to ken is handled in the middleware, refresh tokens need cookie access directly
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
