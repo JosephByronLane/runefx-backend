@@ -114,6 +114,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(
         add_now=True,
     )
+    
     created_by = models.ForeignKey(
         settings.AUTH_USER,
         null=True,
