@@ -48,6 +48,13 @@ class Subtopic(models.Model):
         blank=False,
         null=False
     )
+
+    slug = models.CharField(
+        max_length=60,
+        blank=False,
+        null=False
+    )
+
     parent_topic = models.ForeignKey(
         Topic,
         blank=True, #can be null because its either a parent topic, or a parent subtopic

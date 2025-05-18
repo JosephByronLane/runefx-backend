@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions, generics
+from rest_framework import viewsets, permissions, generics, status
+from rest_framework.response import Response
 from .models import Topic, Subtopic, Post, Comment
 from .serializers import TopicSerializer, SubtopicSerializer, PostSerializer, CommentSerializer
 class TopicViewSet(viewsets.ModelViewSet):
@@ -75,3 +76,40 @@ class PostCommentListView(generics.ListAPIView):
     
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, post_id=self.kwargs['post_id'])
+
+
+class TopicSubtopicListView(generics.ListCreateAPIView):
+    serializer_class = SubtopicSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        topic_id = self.kwargs['topic_id']
+        return Subtopic.objects.filter(parent_topic_id=topic_id)
+    
+    # we override it since if we call through /topics/<topic_id>/subtopics/ we need to get the topic id
+    # since the serializer can't infer it from the request
+    def create(self, request, *args, **kwargs):
+        data= request.data.copy()
+        data['parent_topic'] = self.kwargs['topic_id']
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+#sounds weird but its the subtopic getter for subtopics
+class SubtopicSubtopicListView(generics.ListCreateAPIView):
+    serializer_class = SubtopicSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        subtopic_id = self.kwargs['subtopic_id']
+        return Subtopic.objects.filter(subtopic_id=subtopic_id)
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])

@@ -26,7 +26,7 @@ class SubtopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subtopic
-        fields = ['id', 'title', 'description', 'parent_subtopic','child_subtopics']
+        fields = ['id', 'title', 'description', 'parent_subtopic','child_subtopics', 'parent_topic', 'posts', 'slug']
 
     def get_child_subtopics(self,obj):
         children = Subtopic.objects.filter(parent_subtopic=obj.id)
@@ -87,3 +87,6 @@ class CommentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Comment cannot belong to both a Post and Comment.")
         
         return attrs
+    
+
+
