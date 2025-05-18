@@ -36,3 +36,42 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+
+
+
+# LIST VIEWS
+
+class TopicPostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        topic_id = self.kwargs['topic_id']
+        return Post.objects.filter(topic__id=topic_id)
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user, topic_id=self.kwargs['topic_id'])
+
+class SubtopicPostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        subtopic_id = self.kwargs['subtopic_id']
+        return Post.objects.filter(subtopic__id=subtopic_id)
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])
+
+
+class PostCommentListView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return Comment.objects.filter(post__id=post_id)
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user, post_id=self.kwargs['post_id'])
