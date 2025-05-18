@@ -1,13 +1,11 @@
 from rest_framework import serializers
 from .models import Topic, Subtopic, Post, Comment
 
-
-
+CREATED_BY_USERNAME = 'created_by.username'
 
 class TopicSerializer(serializers.ModelSerializer):
     subtopics = serializers.SerializerMethodField()
     post = serializers.SerializerMethodField()
-    created_by = serializers.ReadOnlyField(source='created_by.username')
 
     class Meta:
         model = Topic
@@ -49,7 +47,7 @@ class SubtopicSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
-    created_by = serializers.ReadOnlyField(source='created_by.username')
+    created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
 
     class Meta:
         model = Post
@@ -70,7 +68,7 @@ class PostSerializer(serializers.ModelSerializer):
     
 class CommentSerializer(serializers.ModelSerializer):
     replies = serializers.SerializerMethodField()
-    created_by = serializers.ReadOnlyField(source='created_by.username')
+    created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
 
     class Meta:
         model = Comment
