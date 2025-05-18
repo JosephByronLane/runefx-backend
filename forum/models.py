@@ -14,7 +14,7 @@ class Topic(models.Model):
     )
     slug = models.CharField(
         max_length=60,
-        allow_blank=False,
+        blank=False,
         null=False
     )
 
@@ -40,12 +40,11 @@ class Topic(models.Model):
 class Subtopic(models.Model):
     title = models.CharField(
         max_length=200,
-        allow_blank=False,
+        blank=False,
         null=False
     )
     description = models.TextField(
         max_length=200,
-        max_length=60,
         blank=False,
         null=False
     )
@@ -67,7 +66,7 @@ class Subtopic(models.Model):
     )
 
     created_by = models.ForeignKey(
-        settings.AUTH_USER,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE    
     )
       
@@ -108,15 +107,15 @@ class Post(models.Model):
     )
 
     updated_at = models.DateTimeField(
-        add_now=True
+        auto_now=True
     )
     
     created_at = models.DateTimeField(
-        add_now=True,
+        auto_now=True,
     )
     
     created_by = models.ForeignKey(
-        settings.AUTH_USER,
+        settings.AUTH_USER_MODEL,
         null=True,
         on_delete=models.SET_NULL
     )
@@ -131,7 +130,7 @@ class Post(models.Model):
     def __srt__(self):
         return self.title
     
-class Comment(models.model):
+class Comment(models.Model):
     content = models.TextField(
         blank=False,
         null=False,
@@ -146,18 +145,18 @@ class Comment(models.model):
     )
 
     created_by = models.ForeignKey(
-        settings.AUTH_USER,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
     )
 
     created_at = models.DateTimeField(
-        auto_add_now=True,
+        auto_now_add=True,
 
     )
 
     updated_at = models.DateTimeField(
-        auto_add=True
+        auto_now=True
     )
 
     def __str__(self):

@@ -5,11 +5,11 @@ CREATED_BY_USERNAME = 'created_by.username'
 
 class TopicSerializer(serializers.ModelSerializer):
     subtopics = serializers.SerializerMethodField()
-    post = serializers.SerializerMethodField()
+    posts = serializers.SerializerMethodField()
 
     class Meta:
         model = Topic
-        fields = ['id', 'title', 'description','subtopics']
+        fields = ['id', 'title', 'description','subtopics', 'posts', 'slug']
 
     def get_subtopics(self, obj):
         subtopics = Subtopic.objects.filter(parent_topic=obj.id)
