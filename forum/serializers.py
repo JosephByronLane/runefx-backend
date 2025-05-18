@@ -16,6 +16,10 @@ class TopicSerializer(serializers.ModelSerializer):
     def get_subtopics(self, obj):
         subtopics = Subtopic.objects.filter(parent_topic=obj.id)
         return SubtopicSerializer(subtopics, many=True, context=self.context).data
+    
+    def get_posts(self, obj):
+        posts = Post.objects.filter(topic=obj.id)
+        return PostSerializer(posts, many=True, context=self.context).data
 
 
 class SubtopicSerializer(serializers.ModelSerializer):
@@ -64,4 +68,24 @@ class PostSerializer(serializers.ModelSerializer):
         
         return attrs
     
+class CommentSerializer(serializers.ModelSerializer):
+    replies = serializers.SerializerMethodField()
+    created_by = serializers.ReadOnlyField(source='created_by.username')
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'created_at', 'updated_at', 'post', 'replies','created_by', 'replies']
+        read_only_fields = ['created_at', 'updated_at', 'created_by']
+
+    def get_replies(self, obj):
+        replies = Comment.objects.filter(parent_comment=obj.id)
+        return CommentSerializer(replies, many=True, context=self.context).data
     
+    def validate(self, attrs):
+        if 'parent_comment' not in attrs and 'post' not in attrs:
+            raise serializers.ValidationError("Comment must belong to a Post or Comment.")
+        
+        if 'parent_comment' in attrs and 'post' in attrs:
+            raise serializers.ValidationError("Comment cannot belong to both a Post and Comment.")
+        
+        return attrs
