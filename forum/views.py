@@ -75,13 +75,9 @@ class TopicSubtopicListView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-class TopicSubtonicDetailListView(generics.RetrieveUpdateDestroyAPIView):
+class SubtopicDetailListView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Subtopic.objects.all()
     serializer_class = SubtopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    lookup_field = 'subtopic_id'
+    lookup_field = 'id'
     lookup_url_kwarg = 'subtopic_id'
-
-    def get_queryset(self):
-        topic_id = self.kwargs['topic_id']
-        return Subtopic.objects.filter(parent_topic_id=topic_id)
-      

@@ -22,8 +22,6 @@ class TopicSerializer(serializers.ModelSerializer):
 
 class SubtopicSerializer(serializers.ModelSerializer):
     posts = serializers.SerializerMethodField()
-    child_subtopics = serializers.SerializerMethodField()
-
     class Meta:
         model = Subtopic
         fields = ['id', 'title', 'description','parent_topic', 'posts', 'slug']
@@ -34,7 +32,7 @@ class SubtopicSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         if 'parent_topic' not in data :
-            raise serializers.ValidationError("Subtopic must belong to a Topic, or Subtopic.")
+            raise serializers.ValidationError("Subtopic must belong to a Topic.")
 
         return data
     
