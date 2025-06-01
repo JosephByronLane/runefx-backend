@@ -12,33 +12,6 @@ class TopicViewSet(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
 
 
-class SubtopicViewSet(viewsets.ModelViewSet):
-    queryset = Subtopic.objects.all()
-    serializer_class = SubtopicSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-
-class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-
 
 
 # LIST VIEWS
@@ -105,22 +78,10 @@ class TopicSubtopicListView(generics.ListCreateAPIView):
 class TopicSubtonicDetailListView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SubtopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'subtopic_id'
+    lookup_url_kwarg = 'subtopic_id'
 
     def get_queryset(self):
         topic_id = self.kwargs['topic_id']
-        subtopic_id = self.kwargs['subtopic_id']
-        return Subtopic.objects.filter(parent_topic_id=topic_id, id=subtopic_id)
-    
-    
-
-#sounds weird but its the subtopic getter for subtopics
-class SubtopicSubtopicListView(generics.ListCreateAPIView):
-    serializer_class = SubtopicSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        subtopic_id = self.kwargs['subtopic_id']
-        return Subtopic.objects.filter(subtopic_id=subtopic_id)
-    
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])
+        return Subtopic.objects.filter(parent_topic_id=topic_id)
+      

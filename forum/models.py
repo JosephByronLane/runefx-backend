@@ -61,13 +61,7 @@ class Subtopic(models.Model):
         null=True,
         on_delete=models.CASCADE,
     )
-    parent_subtopic = models.ForeignKey(
-        'self',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE,
-        related_name='child_subtopics'
-    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -81,11 +75,9 @@ class Subtopic(models.Model):
         return self.title
     
     def clean(self):
-        if not self. parent_subtopic and self.parent_topic:
+        if not  self.parent_topic:
             raise ValueError("A topic must have either a prent topic or subtopic")
         
-        if self.parent_topic and self.sub:
-            raise ValueError("A topic cannot be part of a topic and a subtopic")
         
 class Post(models.Model):
     title = models.CharField(

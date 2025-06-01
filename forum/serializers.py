@@ -26,19 +26,16 @@ class SubtopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subtopic
-        fields = ['id', 'title', 'description', 'parent_subtopic','child_subtopics', 'parent_topic', 'posts', 'slug']
+        fields = ['id', 'title', 'description','parent_topic', 'posts', 'slug']
 
     def get_child_subtopics(self,obj):
         children = Subtopic.objects.filter(parent_subtopic=obj.id)
         return SubtopicSerializer(children, many=True, context=self.context).data
     
     def validate(self, data):
-        if 'parent_topic' not in data and 'parent_subtopic' not in data:
+        if 'parent_topic' not in data :
             raise serializers.ValidationError("Subtopic must belong to a Topic, or Subtopic.")
-        
-        if 'parent_subtopic' in data and 'parent_topic' in data:
-            raise serializers.ValidationError("Subtopic cannot belong to both a Topic and Subtopic.")
-        
+
         return data
     
     def get_posts(self, obj):
