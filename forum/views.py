@@ -38,6 +38,11 @@ class SubtopicPostListView(generics.ListAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])
 
+class TopicDetailListView(generics.ListAPIView):
+    serializer_class = TopicSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'topic_id'
 
 class PostCommentListView(generics.ListAPIView):
     serializer_class = CommentSerializer

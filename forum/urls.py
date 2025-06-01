@@ -9,7 +9,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('topics/<int:topic_id>/posts/', views.TopicPostListView.as_view(), name='topic-posts'),
     path('topics/<int:topic_id>/subtopics/', views.TopicSubtopicListView.as_view(), name='topic-subtopics'),
-
+    path('topics/<int:topic_id>/', views.TopicDetailListView.as_view(), name='topic-detail'),
 
     path('subtopics/<int:subtopic_id>/', views.SubtopicDetailListView.as_view(), name='topic-subtopic-detail'),
 
