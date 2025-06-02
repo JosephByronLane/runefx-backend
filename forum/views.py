@@ -27,7 +27,7 @@ class TopicPostListView(generics.ListAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, topic_id=self.kwargs['topic_id'])
 
-class SubtopicPostListView(generics.ListAPIView):
+class SubtopicPostListView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -86,3 +86,16 @@ class SubtopicDetailListView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'subtopic_id'
+
+class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'post_id'
+
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)
+
+    def perform_destroy(self, instance):
+        instance.delete()

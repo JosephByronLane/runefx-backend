@@ -12,7 +12,7 @@ urlpatterns = [
     path('topics/<int:topic_id>/', views.TopicDetailListView.as_view(), name='topic-detail'),
 
     path('subtopics/<int:subtopic_id>/', views.SubtopicDetailListView.as_view(), name='topic-subtopic-detail'),
-
     path('subtopics/<int:subtopic_id>/posts/', views.SubtopicPostListView.as_view(), name='subtopic-posts'),
-    path('posts/<int:post_id>/comments/', views.PostCommentListView.as_view(), name='post-comments'),
+
+    path('posts/<int:post_id>/', views.PostDetailView.as_view(), name='post-detail'),
 ]
