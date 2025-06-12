@@ -35,8 +35,20 @@ class SubtopicPostListView(generics.ListCreateAPIView):
         subtopic_id = self.kwargs['subtopic_id']
         return Post.objects.filter(subtopic__id=subtopic_id)
     
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['subtopic'] = self.kwargs['subtopic_id']
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])
+
 
 class TopicDetailListView(generics.ListAPIView):
     serializer_class = TopicSerializer

@@ -50,7 +50,8 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at', 'creatded_by']
 
     def get_comments(self,obj):
-        raise NotImplementedError("Comments are not implemented yet.")
+        comments = Comment.objects.filter(post=obj.id)
+        return CommentSerializer(comments, many=True, context=self.context).data
     
     def validate(self, attrs):
         if 'subtopic' not in attrs and 'topic' not in attrs:
