@@ -72,15 +72,12 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at', 'created_by']
 
     def get_replies(self, obj):
-        replies = Comment.objects.filter(parent_comment=obj.id)
+        replies = Comment.objects.filter(replies=obj.id)
         return CommentSerializer(replies, many=True, context=self.context).data
     
     def validate(self, attrs):
-        if 'parent_comment' not in attrs and 'post' not in attrs:
-            raise serializers.ValidationError("Comment must belong to a Post or Comment.")
-        
-        if 'parent_comment' in attrs and 'post' in attrs:
-            raise serializers.ValidationError("Comment cannot belong to both a Post and Comment.")
+        if 'post' not in attrs :
+            raise serializers.ValidationError("Comment must belong to a Post.")
         
         return attrs
     

@@ -143,6 +143,14 @@ class Comment(models.Model):
         on_delete=models.CASCADE
     )
 
+    reply_to = models.ForeignKey(
+        'self',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='replies'
+    )
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

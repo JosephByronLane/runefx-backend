@@ -56,13 +56,25 @@ class TopicDetailListView(generics.ListAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'topic_id'
 
-class PostCommentListView(generics.ListAPIView):
+class PostCommentListView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post__id=post_id)
+    
+    def create(self, request, *args, **kwargs):
+
+        data = request.data.copy()
+        data['post'] = self.kwargs['post_id']
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, post_id=self.kwargs['post_id'])
