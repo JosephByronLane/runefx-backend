@@ -12,7 +12,7 @@ class TopicSerializerWithoutPosts(serializers.ModelSerializer):
 
     def get_subtopics(self, obj):
         subtopics = Subtopic.objects.filter(parent_topic=obj.id)
-        return SubtopicSerializer(subtopics, many=True, context=self.context).data
+        return SubtopicSerializerWithoutPosts(subtopics, many=True, context=self.context).data
 
 
 
@@ -38,10 +38,6 @@ class SubtopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subtopic
         fields = ['id', 'title', 'description','parent_topic', 'posts', 'slug']
-
-    def get_child_subtopics(self,obj):
-        children = Subtopic.objects.filter(parent_subtopic=obj.id)
-        return SubtopicSerializer(children, many=True, context=self.context).data
     
     def validate(self, data):
         if 'parent_topic' not in data :
@@ -52,6 +48,19 @@ class SubtopicSerializer(serializers.ModelSerializer):
     def get_posts(self, obj):
         posts = Post.objects.filter(subtopic=obj.id)
         return PostSerializer(posts, many=True, context=self.context).data
+
+
+class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
+    class Meta:
+        model = Subtopic
+        fields = ['id', 'title', 'description', 'parent_topic', 'slug']
+    
+    def validate(self, data):
+        if 'parent_topic' not in data :
+            raise serializers.ValidationError("Subtopic must belong to a Topic.")
+
+        return data
+
 
 class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
