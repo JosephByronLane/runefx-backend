@@ -12,7 +12,7 @@ class TopicViewSet(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
 
 # LIST VIEWS
-class TopicPostListView(generics.ListAPIView):
+class TopicPostListView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -20,6 +20,20 @@ class TopicPostListView(generics.ListAPIView):
         topic_id = self.kwargs['topic_id']
         return Post.objects.filter(topic__id=topic_id)
     
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['topic'] = self.kwargs['topic_id']
+        print(data)
+        serializer = self.get_serializer(data=data)
+        print("1")
+        print(serializer)
+        serializer.is_valid(raise_exception=True)
+        print("2")
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, topic_id=self.kwargs['topic_id'])
 
@@ -45,12 +59,12 @@ class SubtopicPostListView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])
 
-
 class TopicDetailListView(generics.ListAPIView):
     serializer_class = TopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'topic_id'
+    
 
 class PostCommentListView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
