@@ -2,6 +2,19 @@ from rest_framework import serializers
 from .models import Topic, Subtopic, Post, Comment
 
 CREATED_BY_USERNAME = 'created_by.username'
+#for fetching topics without posts and subtopics posts
+class TopicSerializerWithoutPosts(serializers.ModelSerializer):
+    subtopics = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Topic
+        fields = ['id', 'title', 'description', 'subtopics', 'slug']
+
+    def get_subtopics(self, obj):
+        subtopics = Subtopic.objects.filter(parent_topic=obj.id)
+        return SubtopicSerializer(subtopics, many=True, context=self.context).data
+
+
 
 class TopicSerializer(serializers.ModelSerializer):
     subtopics = serializers.SerializerMethodField()
