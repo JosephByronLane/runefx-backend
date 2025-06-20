@@ -30,6 +30,7 @@ class TopicSerializer(serializers.ModelSerializer):
     
     def get_posts(self, obj):
         posts = Post.objects.filter(topic=obj.id)
+        print("Posts in topic:", posts)
         return PostSerializer(posts, many=True, context=self.context).data
 
 
@@ -90,7 +91,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'content', 'created_at', 'updated_at', 'post', 'replies','created_by', 'replies']
+        fields = ['id', 'content', 'created_at', 'updated_at', 'post', 'created_by', 'replies']
         read_only_fields = ['created_at', 'updated_at', 'created_by']
 
     def get_replies(self, obj):

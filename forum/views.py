@@ -12,23 +12,15 @@ class TopicViewSet(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
 
 # LIST VIEWS
-class TopicPostListView(generics.ListCreateAPIView):
+class TopicPostCreateView(generics.CreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        topic_id = self.kwargs['topic_id']
-        return Post.objects.filter(topic__id=topic_id)
     
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
         data['topic'] = self.kwargs['topic_id']
-        print(data)
         serializer = self.get_serializer(data=data)
-        print("1")
-        print(serializer)
         serializer.is_valid(raise_exception=True)
-        print("2")
         self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)
@@ -59,13 +51,17 @@ class SubtopicPostListView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])
 
-class TopicDetailListView(generics.ListAPIView):
+class TopicDetailListView(generics.RetrieveAPIView):
     serializer_class = TopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'topic_id'
+    print("asdf")
+    def get_queryset(self):
+        topic_id = self.kwargs['topic_id']
+        print("Fetching topic with ID:", topic_id)
+        return Topic.objects.filter(id=topic_id)
     
-
 class PostCommentListView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -90,13 +86,9 @@ class PostCommentListView(generics.ListCreateAPIView):
         serializer.save(created_by=self.request.user, post_id=self.kwargs['post_id'])
 
 
-class TopicSubtopicListView(generics.ListCreateAPIView):
+class TopicSubtopicCreateView(generics.CreateAPIView):
     serializer_class = SubtopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        topic_id = self.kwargs['topic_id']
-        return Subtopic.objects.filter(parent_topic_id=topic_id)
     
     # we override it since if we call through /topics/<topic_id>/subtopics/ we need to get the topic id
     # since the serializer can't infer it from the request
