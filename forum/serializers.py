@@ -52,31 +52,6 @@ class SubtopicSerializer(serializers.ModelSerializer):
         return PostSerializer(posts, many=True, context=self.context).data
 
 
-class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
-    post_count = serializers.SerializerMethodField()
-    latest_post_user = serializers.SerializerMethodField()
-    latest_post_time = serializers.SerializerMethodField()
-    class Meta:
-        model = Subtopic
-        fields = ['id', 'title', 'description', 'parent_topic', 'slug', 'post_count', 'latest_post_user', 'latest_post_time']
-    
-    def validate(self, data):
-        if 'parent_topic' not in data :
-            raise serializers.ValidationError("Subtopic must belong to a Topic.")
-        return data
-
-    def get_post_count(self, obj):
-        return Post.objects.filter(subtopic=obj.id).count()
-    
-    def get_latest_post_user(self, obj):
-        if not Post.objects.filter(subtopic=obj.id).exists():
-            return None  #only for testing purposes, in production there WILL be posts, so there isn't a need to check for this
-        return Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_by.username 
-    
-    def get_latest_post_time(self, obj):
-         return Post.objects.filter(subtopic=obj.id).order_by('-created_at').first()
-
-
 class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
     created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
@@ -98,6 +73,34 @@ class PostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Post cannot belong to both a Topic and Subtopic.")
         
         return attrs
+    
+class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
+    post_count = serializers.SerializerMethodField()
+    latest_post_user = serializers.SerializerMethodField()
+    latest_post_time = serializers.SerializerMethodField()
+    class Meta:
+        model = Subtopic
+        fields = ['id', 'title', 'description', 'parent_topic', 'slug', 'post_count', 'latest_post_user', 'latest_post_time']
+    
+    def validate(self, data):
+        if 'parent_topic' not in data :
+            raise serializers.ValidationError("Subtopic must belong to a Topic.")
+        return data
+
+    def get_post_count(self, obj):
+        return Post.objects.filter(subtopic=obj.id).count()
+    
+    def get_latest_post_user(self, obj):
+        if not Post.objects.filter(subtopic=obj.id).exists():
+            return None  #only for testing purposes, in production there WILL be posts, so there isn't a need to check for this
+        return Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_by.first_name 
+    
+    def get_latest_post_time(self, obj):
+        if not Post.objects.filter(subtopic=obj.id).exists():
+            return None
+        return Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_at
+
+
     
 class CommentSerializer(serializers.ModelSerializer):
     replies = serializers.SerializerMethodField()
