@@ -95,14 +95,16 @@ class Post(models.Model):
         Topic,
         blank=True,
         null=True,
-        on_delete=models.CASCADE                      
-        )
-    
+        on_delete=models.CASCADE,
+        related_name='posts'               
+    )    
+
     subtopic = models.ForeignKey(
         Subtopic,
         blank=True,
         null=True,
-        on_delete=models.CASCADE    
+        on_delete=models.CASCADE,
+        related_name='posts'
     )
 
     updated_at = models.DateTimeField(
