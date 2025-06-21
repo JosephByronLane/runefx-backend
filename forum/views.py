@@ -11,6 +11,9 @@ class TopicViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
+    def get_queryset(self):
+        return Topic.objects.all().order_by('id')
+
 # LIST VIEWS
 class TopicPostCreateView(generics.CreateAPIView):
     serializer_class = PostSerializer
@@ -56,10 +59,8 @@ class TopicDetailListView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'topic_id'
-    print("asdf")
     def get_queryset(self):
         topic_id = self.kwargs['topic_id']
-        print("Fetching topic with ID:", topic_id)
         return Topic.objects.filter(id=topic_id)
     
 class PostCommentListView(generics.ListCreateAPIView):
