@@ -3,25 +3,7 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 class User(AbstractUser):
-    
-    MAYA = 'maya'
-    BLENDER = 'blender'
-    Houdini = 'houdini'
-    KATANA = 'katana'
-    
 
-    DCC_CHOICES = [
-        (MAYA, 'Maya'),
-        (BLENDER, 'Blender'),
-        (Houdini, 'Houdini'),
-        (KATANA, 'Katana'),
-    ]
-    dcc = models.CharField(max_length=255, 
-                           null=False, 
-                           blank=False, 
-                           choices=DCC_CHOICES,
-                           help_text='The primary DCC package used by the user',
-                           )
     
     bio = models.TextField(
         null=True,
@@ -75,20 +57,6 @@ class User(AbstractUser):
         help_text='Users email',
     )
 
-    first_name = models.CharField(
-        max_length=255,
-        null=False,
-        blank=False,
-        help_text='Users first name',
-    )
-
-    last_name = models.CharField(
-        max_length=255,
-        null=False,
-        blank=False,
-        help_text='Users last name',
-    )
-    
 
     def __str__(self):
         return self.username
