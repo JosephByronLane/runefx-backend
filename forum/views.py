@@ -55,7 +55,7 @@ class SubtopicPostListView(generics.ListCreateAPIView):
         serializer.save(created_by=self.request.user, subtopic_id=self.kwargs['subtopic_id'])
 
 class TopicDetailListView(generics.RetrieveAPIView):
-    serializer_class = TopicSerializer
+    serializer_class = TopicSerializerWithoutPosts
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'topic_id'

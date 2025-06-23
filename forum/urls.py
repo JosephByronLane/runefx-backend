@@ -15,6 +15,7 @@ urlpatterns = [
 
     path('posts/<int:post_id>/', views.PostDetailView.as_view(), name='post-detail'),
     path('posts/<int:post_id>/comments/', views.PostCommentListView.as_view(), name='post-comments'),
+    
     path('', include(router.urls)),
 ]
 
