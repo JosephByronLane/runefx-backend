@@ -43,7 +43,6 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     def retrieve(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-        print(f"Refresh - Token hash: {hash(refresh_token)}")
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 

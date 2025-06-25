@@ -49,7 +49,7 @@ class SubtopicSerializer(serializers.ModelSerializer):
     
     def get_posts(self, obj):
         posts = Post.objects.filter(subtopic=obj.id)
-        return PostSerializer(posts, many=True, context=self.context).data
+        return PostSerializerWithoutReplies(posts, many=True, context=self.context).data
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -64,6 +64,22 @@ class PostSerializer(serializers.ModelSerializer):
     def get_comments(self,obj):
         comments = Comment.objects.filter(post=obj.id)
         return CommentSerializer(comments, many=True, context=self.context).data
+    
+    def validate(self, attrs):
+        if 'subtopic' not in attrs and 'topic' not in attrs:
+            raise serializers.ValidationError("Post must belong to a Topic or Subtopic.")
+        
+        if 'subtopic' in attrs and 'topic' in attrs:
+            raise serializers.ValidationError("Post cannot belong to both a Topic and Subtopic.")
+        
+        return attrs
+class PostSerializerWithoutReplies(serializers.ModelSerializer):
+    created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'subtopic', 'topic','created_by']
+        read_only_fields = ['created_at', 'updated_at', 'creatded_by']
     
     def validate(self, attrs):
         if 'subtopic' not in attrs and 'topic' not in attrs:
@@ -92,7 +108,7 @@ class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
     def get_latest_post_data(self, obj):
         if not Post.objects.filter(subtopic=obj.id).exists():
             return{
-                'latest_post_user': 'Null User',
+                'username': 'Null User',
                 'latest_post_time': 0,
                 'latest_post_user_pfp': ''
             }        
@@ -101,7 +117,7 @@ class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
         post_created_by_username= Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_by.first_name 
 
         return{
-            'latest_post_user': post_created_by_username,
+            'username': post_created_by_username,
             'latest_post_time': post_created_at,
             'latest_post_user_pfp': post_created_by_pfp
         }
