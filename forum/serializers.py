@@ -75,10 +75,10 @@ class PostSerializer(serializers.ModelSerializer):
         return attrs
 class PostSerializerWithoutReplies(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
-
+    amount_of_comments = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'subtopic', 'topic','created_by']
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'subtopic', 'topic','created_by', 'amount_of_comments']
         read_only_fields = ['created_at', 'updated_at', 'creatded_by']
     
     def validate(self, attrs):
@@ -89,7 +89,13 @@ class PostSerializerWithoutReplies(serializers.ModelSerializer):
             raise serializers.ValidationError("Post cannot belong to both a Topic and Subtopic.")
         
         return attrs
-    
+
+    def get_amount_of_comments(self, obj):
+        if not Comment.objects.filter(post=obj.id).exists():
+            return "0"
+        
+        return Comment.objects.filter(post=obj.id).count()
+
 class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
     post_count = serializers.SerializerMethodField()
     latest_post_data = serializers.SerializerMethodField()
