@@ -76,9 +76,11 @@ class PostSerializer(serializers.ModelSerializer):
 class PostSerializerWithoutReplies(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
     amount_of_comments = serializers.SerializerMethodField()
+    latest_comment_data = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'subtopic', 'topic','created_by', 'amount_of_comments']
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'subtopic', 'topic','created_by', 'amount_of_comments','latest_comment_data']
         read_only_fields = ['created_at', 'updated_at', 'creatded_by']
     
     def validate(self, attrs):
@@ -95,6 +97,24 @@ class PostSerializerWithoutReplies(serializers.ModelSerializer):
             return "0"
         
         return Comment.objects.filter(post=obj.id).count()
+    
+    def get_latest_comment_data(self, obj):
+        if not Comment.objects.filter(post=obj.id).exists():
+            return{
+                'username': 'Null User',
+                'latest_post_time': 0,
+                'latest_post_user_pfp': ''
+            }   
+
+        post_created_at = Comment.objects.filter(post=obj.id).order_by('-created_at').first().created_at
+        post_created_by_pfp = Comment.objects.filter(post=obj.id).order_by('-created_at').first().created_by.profile_picture_url
+        post_created_by_username= Comment.objects.filter(post=obj.id).order_by('-created_at').first().created_by.first_name 
+
+        return{
+            'username': post_created_by_username,
+            'latest_post_time': post_created_at,
+            'latest_post_user_pfp': post_created_by_pfp
+        }
 
 class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
     post_count = serializers.SerializerMethodField()
