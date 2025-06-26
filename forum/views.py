@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
 from .models import Topic, Subtopic, Post, Comment
-from .serializers import TopicSerializer, SubtopicSerializer, PostSerializer, CommentSerializer, TopicSerializerWithoutPosts
+from .serializers import TopicSerializer, SubtopicSerializer, PostSerializer, CommentSerializer, TopicSerializerWithoutPosts, PostSerializerWithoutReplies
 class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializerWithoutPosts
@@ -33,7 +33,7 @@ class TopicPostCreateView(generics.CreateAPIView):
         serializer.save(created_by=self.request.user, topic_id=self.kwargs['topic_id'])
 
 class SubtopicPostListView(generics.ListCreateAPIView):
-    serializer_class = PostSerializer
+    serializer_class = PostSerializerWithoutReplies
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):

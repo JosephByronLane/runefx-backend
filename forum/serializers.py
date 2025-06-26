@@ -54,11 +54,11 @@ class SubtopicSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
-    created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
+    created_by = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'subtopic', 'topic', 'comments','created_by']
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'created_by','subtopic', 'topic', 'comments','created_by']
         read_only_fields = ['created_at', 'updated_at', 'creatded_by']
 
     def get_comments(self,obj):
@@ -73,6 +73,14 @@ class PostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Post cannot belong to both a Topic and Subtopic.")
         
         return attrs
+    
+    def get_created_by(self, obj):
+        if obj.created_by:
+            return {
+                'username': obj.created_by.username,
+                'user_pfp_url': obj.created_by.profile_picture_url
+            }
+        return None
 class PostSerializerWithoutReplies(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
     amount_of_comments = serializers.SerializerMethodField()
@@ -150,7 +158,7 @@ class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
     
 class CommentSerializer(serializers.ModelSerializer):
     replies = serializers.SerializerMethodField()
-    created_by = serializers.ReadOnlyField(source=CREATED_BY_USERNAME)
+    created_by = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -168,4 +176,10 @@ class CommentSerializer(serializers.ModelSerializer):
         return attrs
     
 
-
+    def get_created_by(self, obj):
+        if obj.created_by:
+            return {
+                'username': obj.created_by.username,
+                'user_pfp_url': obj.created_by.profile_picture_url
+            }
+        return None
