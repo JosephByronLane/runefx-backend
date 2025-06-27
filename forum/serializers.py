@@ -111,17 +111,17 @@ class PostSerializerWithoutReplies(serializers.ModelSerializer):
             return{
                 'username': 'Null User',
                 'latest_post_time': 0,
-                'latest_post_user_pfp': ''
+                'user_pfp_url': ''
             }   
 
         post_created_at = Comment.objects.filter(post=obj.id).order_by('-created_at').first().created_at
         post_created_by_pfp = Comment.objects.filter(post=obj.id).order_by('-created_at').first().created_by.profile_picture_url
-        post_created_by_username= Comment.objects.filter(post=obj.id).order_by('-created_at').first().created_by.first_name 
+        post_created_by_username= Comment.objects.filter(post=obj.id).order_by('-created_at').first().created_by.username 
 
         return{
             'username': post_created_by_username,
             'latest_post_time': post_created_at,
-            'latest_post_user_pfp': post_created_by_pfp
+            'user_pfp_url': post_created_by_pfp
         }
 
 class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
@@ -144,16 +144,16 @@ class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
             return{
                 'username': 'Null User',
                 'latest_post_time': 0,
-                'latest_post_user_pfp': ''
+                'user_pfp_url': ''
             }        
         post_created_at = Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_at
         post_created_by_pfp = Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_by.profile_picture_url
-        post_created_by_username= Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_by.first_name 
+        post_created_by_username= Post.objects.filter(subtopic=obj.id).order_by('-created_at').first().created_by.username 
 
         return{
             'username': post_created_by_username,
             'latest_post_time': post_created_at,
-            'latest_post_user_pfp': post_created_by_pfp
+            'user_pfp_url': post_created_by_pfp
         }
     
 class CommentSerializer(serializers.ModelSerializer):

@@ -107,7 +107,7 @@ class TopicSubtopicCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-class SubtopicDetailListView(generics.RetrieveUAPIView):
+class SubtopicDetailListView(generics.RetrieveAPIView):
     queryset = Subtopic.objects.all()
     serializer_class = SubtopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]

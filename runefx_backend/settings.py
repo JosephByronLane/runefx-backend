@@ -58,7 +58,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'authentication.renderers.TokenRemovingJSONRenderer',
-        
     ],
 }
 
