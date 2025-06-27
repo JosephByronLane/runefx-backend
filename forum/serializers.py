@@ -157,17 +157,13 @@ class SubtopicSerializerWithoutPosts(serializers.ModelSerializer):
         }
     
 class CommentSerializer(serializers.ModelSerializer):
-    replies = serializers.SerializerMethodField()
     created_by = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'content', 'created_at', 'updated_at', 'post', 'created_by', 'replies']
+        fields = ['id', 'content', 'created_at', 'updated_at', 'post', 'created_by', 'reply_to']
         read_only_fields = ['created_at', 'updated_at', 'created_by']
 
-    def get_replies(self, obj):
-        replies = Comment.objects.filter(replies=obj.id)
-        return CommentSerializer(replies, many=True, context=self.context).data
     
     def validate(self, attrs):
         if 'post' not in attrs :
