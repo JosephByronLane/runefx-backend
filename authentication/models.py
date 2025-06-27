@@ -38,7 +38,6 @@ class User(AbstractUser):
     
     ROLE_CHOICES = [
         ('user', 'User'),
-        ('staff', 'Staff'),
         ('admin', 'Admin'),
     ]
 
@@ -55,6 +54,13 @@ class User(AbstractUser):
         null=False,
         blank=False,
         help_text='Users email',
+    )
+
+    username = models.TextField(
+        null=False,
+        max_length=255,
+        blank=False,
+        unique=True
     )
 
 

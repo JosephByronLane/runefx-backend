@@ -32,7 +32,7 @@ class TopicPostCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, topic_id=self.kwargs['topic_id'])
 
-class SubtopicPostListView(generics.ListCreateAPIView):
+class SubtopicPostListView(generics.CreateAPIView):
     serializer_class = PostSerializerWithoutReplies
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -63,7 +63,7 @@ class TopicDetailListView(generics.RetrieveAPIView):
         topic_id = self.kwargs['topic_id']
         return Topic.objects.filter(id=topic_id)
     
-class PostCommentListView(generics.ListCreateAPIView):
+class PostCommentListView(generics.CreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -107,14 +107,14 @@ class TopicSubtopicCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-class SubtopicDetailListView(generics.RetrieveUpdateDestroyAPIView):
+class SubtopicDetailListView(generics.RetrieveAPIView):
     queryset = Subtopic.objects.all()
     serializer_class = SubtopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'subtopic_id'
 
-class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
+class PostDetailView(generics.RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
