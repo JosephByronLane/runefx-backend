@@ -43,7 +43,6 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     def retrieve(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-        print(f"Refresh - Token hash: {hash(refresh_token)}")
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
@@ -105,7 +104,6 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CustomTokenRefreshSerializer
-    print("test")
     def post(self, request, *args, **kwargs):
         #only access to ken is handled in the middleware, refresh tokens need cookie access directly
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])

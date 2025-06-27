@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     #apps
     'authentication',
+    'forum',
 ]
 
 REST_FRAMEWORK = {
