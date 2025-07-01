@@ -11,9 +11,12 @@ from .serializers import ReleaseSerializer, ReleaseSerializerWithoutContent
 
 class ReleaseViewSet(viewsets.ModelViewSet):
     queryset = Release.objects.all()
-    serializer_class = ReleaseSerializerWithoutContent
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ReleaseSerializer
+        return ReleaseSerializerWithoutContent    
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -22,7 +25,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
         return Release.objects.all().order_by('-created_at')
     
 class ReleaseDetailView(generics.RetrieveAPIView):
-    queryset = Release.objects.all().order_by('-created_at')
+    queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 

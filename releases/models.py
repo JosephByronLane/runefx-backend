@@ -35,7 +35,11 @@ class Release(models.Model):
         help_text="Release note's content. Markdown supported"
     )
 
-
+    description = models.TextField(
+        blank=False,
+        null=False,
+        help_text="Short description of what the patch notes might contain"
+    )
     def __str__(self):
         return self.title
     
