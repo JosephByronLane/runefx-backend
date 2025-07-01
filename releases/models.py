@@ -7,6 +7,11 @@ class Release(models.Model):
         null=False
     )
 
+    showcase_picture_url =  models.CharField(
+        blank=False,
+        null=False
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
 
