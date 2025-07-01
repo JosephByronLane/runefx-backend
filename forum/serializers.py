@@ -48,7 +48,7 @@ class SubtopicSerializer(serializers.ModelSerializer):
         return data
     
     def get_posts(self, obj):
-        posts = Post.objects.filter(subtopic=obj.id)
+        posts = Post.objects.filter(subtopic=obj.id).order_by('-created_at')
         return PostSerializerWithoutReplies(posts, many=True, context=self.context).data
 
 

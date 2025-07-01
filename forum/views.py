@@ -108,11 +108,12 @@ class TopicSubtopicCreateView(generics.CreateAPIView):
         serializer.save(created_by=self.request.user)
 
 class SubtopicDetailListView(generics.RetrieveAPIView):
-    queryset = Subtopic.objects.all()
+    queryset = Subtopic.objects.all().order_by('id')
     serializer_class = SubtopicSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'subtopic_id'
+    
 
 class PostDetailView(generics.RetrieveAPIView):
     queryset = Post.objects.all()
