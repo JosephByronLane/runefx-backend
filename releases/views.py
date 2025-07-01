@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions, generics, status
-from rest_framework.response import Res
+from rest_framework.response import Response
 
 from .models import Release
 from .serializers import ReleaseSerializer, ReleaseSerializerWithoutContent
