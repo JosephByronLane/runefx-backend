@@ -3,10 +3,11 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register(r'blogs', views.ReleaseViewSet)
+router.register(r'', views.ReleaseViewSet)
+
 urlpatterns = [
 
-    path('blogs/<int:blod_id>/', views.ReleaseDetailView.as_view(), name="blog-detail"),
+    path('/<int:release_id>/', views.ReleaseDetailView.as_view(), name="release-detail"),
 
     path('', include(router.urls)),
 ]

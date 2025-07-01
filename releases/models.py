@@ -24,9 +24,10 @@ class Release(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
-        blank=False,
-        null=False
+        blank = False,
+        null = False
     )
+
 
     content = models.TextField(
         blank=False,
@@ -35,3 +36,6 @@ class Release(models.Model):
     )
 
 
+    def __str__(self):
+        return self.title
+    

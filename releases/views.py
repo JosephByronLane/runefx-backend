@@ -11,16 +11,15 @@ from .serializers import ReleaseSerializer, ReleaseSerializerWithoutContent
 
 class ReleaseViewSet(viewsets.ModelViewSet):
     queryset = Release.objects.all()
-
     serializer_class = ReleaseSerializerWithoutContent
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
     def perform_create(self, serializer):
-        return super().perform_create(serializer)
+        serializer.save(created_by=self.request.user)
     
     def get_queryset(self):
-        return super().get_queryset()
+        return Release.objects.all().order_by('-created_at')
     
 class ReleaseDetailView(generics.RetrieveAPIView):
     queryset = Release.objects.all().order_by('-created_at')
