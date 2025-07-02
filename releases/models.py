@@ -12,6 +12,11 @@ class Release(models.Model):
         null=False
     )
 
+    showcase_picture_credits = models.CharField(
+        blank=False,
+        null=False
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
 
