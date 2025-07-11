@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Movie, Director
-class VfxSerializer(serializers.ModelSerializer):
+class VfxSerializerDetail(serializers.ModelSerializer):
     directors = serializers.SerializerMethodField()
     producers = serializers.SerializerMethodField()
     vfx_supervisors = serializers.SerializerMethodField()
@@ -31,3 +31,10 @@ class VfxSerializer(serializers.ModelSerializer):
     def get_animation_supervisors(self, obj):
         animation_supervisors = obj.animation_supervisors.all()
         return [director.name for director in animation_supervisors]
+class VfxSerializerBase(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Movie
+        fields = ['id', 'title', 'imgsrc', 'year']
+
+
