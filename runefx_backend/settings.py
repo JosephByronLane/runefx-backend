@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'authentication',
     'forum',
     'releases',
+    'vfx'
 ]
 
 REST_FRAMEWORK = {
