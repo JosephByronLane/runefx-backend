@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-//postgres db in aiven
+//postgres db in aiven free tier
 provider "aiven" {
   api_token = var.aiven_api_token
 }
