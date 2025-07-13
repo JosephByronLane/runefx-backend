@@ -14,3 +14,9 @@ variable "aiven_pg_user_password" {
   sensitive = true
   type = string
 }
+
+variable "gcp_rfx_project_id" {
+  description = "Project ID of the RuneFX Project"
+  sensitive = true
+  type = string
+}

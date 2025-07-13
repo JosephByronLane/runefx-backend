@@ -14,3 +14,7 @@ provider "aiven" {
 
 
 //backend service in gcp run
+provider "google" {
+  project     = var.gcp_rfx_project_id //we need an org to be able to create projects dynamically, as we dont, we gotta create it manualy
+  region      = "us-central1"
+}
