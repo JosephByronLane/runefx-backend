@@ -31,3 +31,8 @@ variable "cloudflare_zone_id" {
   type = string
   sensitive = true
 }
+
+variable "github_repository_id" {
+  default = "Repository ID of the, well, repository..."
+  type = string
+}
