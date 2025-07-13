@@ -4,6 +4,10 @@ terraform {
       source = "aiven/aiven"
       version = ">= 4.0.0, < 5.0.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~>4.25"
+    }
   }
 }
 
@@ -17,4 +21,9 @@ provider "aiven" {
 provider "google" {
   project     = var.gcp_rfx_project_id //we need an org to be able to create projects dynamically, as we dont, we gotta create it manualy
   region      = "us-central1"
+}
+
+//cf for dns
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token  
 }

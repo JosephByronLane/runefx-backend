@@ -20,3 +20,14 @@ variable "gcp_rfx_project_id" {
   sensitive = true
   type = string
 }
+
+variable "cloudflare_api_token" {
+  default = "API token for cloudflare provider"
+  type = string
+  sensitive = true
+}
+variable "cloudflare_zone_id" {
+  default = "Zone ID for the cloudflare domain"
+  type = string
+  sensitive = true
+}

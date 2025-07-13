@@ -1,4 +1,4 @@
-resource "google_cloud_run_v2_service" "default" {
+resource "google_cloud_run_v2_service" "gcp_rfx_cloud_run" {
   name     = "rfx-backend"
   location = "us-central1"
   deletion_protection = false
