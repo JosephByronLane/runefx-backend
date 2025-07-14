@@ -42,7 +42,7 @@ resource "google_iam_workload_identity_pool_provider" "gcp_rfx_wif_pool_gh" {
   attribute_mapping = {
     "google.subject" = "assertion.sub"
   }
-  attribute_condition = "assertion.repository_id == ${var.github_repository_id}"
+  attribute_condition = "assertion.repository_id == ${var.github_repository}"
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }

@@ -32,8 +32,8 @@ variable "cloudflare_zone_id" {
   sensitive = true
 }
 
-variable "github_repository_id" {
-  default = "Repository ID of the, well, repository..."
+variable "github_repository" {
+  default = "Repository in github with format owner-name/repository-name"
   type = string
 }
 
