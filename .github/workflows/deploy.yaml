@@ -40,13 +40,16 @@ jobs:
       TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID}}
       TF_VAR_github_repository_id: ${{ secrets.REPOSITORY_ID}}
 
-      
+
     environment: prod
     permissions:
       contents: 'read'
       id-token: 'write'
 
     steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332' # actions/checkout@v4
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.1.7"
