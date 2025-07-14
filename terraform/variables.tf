@@ -36,8 +36,3 @@ variable "github_repository" {
   default = "Repository in github with format owner-name/repository-name"
   type = string
 }
-
-variable "gcp_credentials_key" {
-  sensitive = true
-  description = "Key of the GCP account to auth with"
-}
