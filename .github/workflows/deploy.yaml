@@ -7,7 +7,7 @@ on:
       
 
 jobs:
-  deploy:
+  docker-build-and-push:
     runs-on: 'ubuntu-latest'
     environment: prod
     permissions:
@@ -29,6 +29,24 @@ jobs:
             docker build . -t  ${{ secrets. DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:latest
             docker push ${{ secrets. DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:latest
 
+  terraform-apply:
+    runs-on: 'ubuntu-latest'
+    env:
+      TF_VAR_aiven_api_token: ${{secrets.AIVEN_API_TOKEN}}
+      TF_VAR_aiven_pg_user_username: ${{ secrets.AIVEN_PG_USER_USERNAME }}
+      TF_VAR_aiven_pg_user_password: ${{ secrets. AIVEN_PG_USER_PASSWORD }}
+      TF_VAR_gcp_rfx_project_id: ${{secrets.GCP_RFX_PROJECT_ID}}
+      TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN}}
+      TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID}}
+      TF_VAR_github_repository_id: ${{ secrets.REPOSITORY_ID}}
+
+      
+    environment: prod
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.1.7"
