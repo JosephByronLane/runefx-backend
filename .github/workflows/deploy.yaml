@@ -53,16 +53,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: 'Write env vars file'
-        run: |
-          cat > env-vars.yaml << EOF
-
-          EOF
-          
-
       - id: 'deploy'
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: ${{secrets.GCP_CLOUD_RUN_SERVICE}}
           image: docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:${{github.sha}}
-          env_vars_file: 'env-vars.yaml'
+          env_vars: |-
+            DB_NAME: ${{secrets.DB_NAME}}
+            DB_USER=${{secrets.DB_USER}}
+            DB_PASSWORD=${{secrets.DB_PASSWORD}}
+            DB_HOST=${{secrets.DB_HOST}}
+            DB_PORT=${{secrets.DB_PORT}}
+
+            PRODUCTION=${{secrets.PRODUCTION}}
+
+            DJANGO_SECRET_KEY=${{secrets.DJANGO_SECRET_KEY}}
+
+            ALLOWED_ORIGINS=${{secrets.ALLOWED_ORIGINS}}
