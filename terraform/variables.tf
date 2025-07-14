@@ -1,3 +1,4 @@
+//aiven
 variable "aiven_api_token" {
   description = "API token for AIVEN."
   sensitive = true
@@ -15,24 +16,44 @@ variable "aiven_pg_user_password" {
   type = string
 }
 
+
+//gcp
 variable "gcp_rfx_project_id" {
   description = "Project ID of the RuneFX Project"
   sensitive = true
   type = string
 }
 
+
+
+//cloudflare
 variable "cloudflare_api_token" {
-  default = "API token for cloudflare provider"
+  description = "API token for cloudflare provider"
   type = string
   sensitive = true
 }
 variable "cloudflare_zone_id" {
-  default = "Zone ID for the cloudflare domain"
+  description = "Zone ID for the cloudflare domain"
   type = string
   sensitive = true
 }
 
+
+
+//gh
 variable "github_repository" {
-  default = "Repository in github with format owner-name/repository-name"
+  description = "Repository in github with format owner-name/repository-name"
+  type = string
+}
+
+
+///docker
+variable "dockerhub_username" {
+  description = "Username of the dockerhub account where the iamge is hosted"
+  type = string
+}
+
+variable "dockerhub_repository" {
+  description = "Name of the repository where the docker image is hosted"
   type = string
 }

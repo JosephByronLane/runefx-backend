@@ -5,13 +5,19 @@ resource "google_cloud_run_v2_service" "gcp_rfx_cloud_run" {
   ingress = "INGRESS_TRAFFIC_ALL"
 
   template {
+    scaling {
+      max_instance_count = 1
+      min_instance_count = 0
+    }
     containers {
-      image = "us-docker.pkg.dev/cloudrun/container/hello" //gets overwritten once the ci pipeline runs
+      image = "docker.io/${var.dockerhub_username}/${var.dockerhub_repository}:latest" //gets overwritten by the newest once the ci pipeline runs
+      name = "runefx-backend-1"
       resources {
         limits = {
           cpu    = "1"
           memory = "512Mi"
         }
+        cpu_idle = true
       }
     }
   }
@@ -64,4 +70,16 @@ resource "google_iam_workload_identity_pool_provider" "gcp_rfx_wif_pool_gh" {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
   depends_on = [ google_iam_workload_identity_pool.gcp_rfx_wif_pool ]
+}
+
+
+resource "google_cloud_run_domain_mapping" "gcp_rfx_run_domain_mapping" {
+  location = "us-central1"
+  name = "api.runefx.org"
+  metadata {
+    namespace = var.gcp_rfx_project_id
+  }
+  spec {
+    route_name = google_cloud_run_v2_service.gcp_rfx_cloud_run.name
+  }
 }
