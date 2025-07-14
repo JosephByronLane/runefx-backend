@@ -59,7 +59,7 @@ jobs:
           service: ${{secrets.GCP_CLOUD_RUN_SERVICE}}
           image: docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:${{github.sha}}
           env_vars: |-
-            DB_NAME: ${{secrets.DB_NAME}}
+            DB_NAME= ${{secrets.DB_NAME}}
             DB_USER=${{secrets.DB_USER}}
             DB_PASSWORD=${{secrets.DB_PASSWORD}}
             DB_HOST=${{secrets.DB_HOST}}
@@ -69,4 +69,4 @@ jobs:
 
             DJANGO_SECRET_KEY=${{secrets.DJANGO_SECRET_KEY}}
 
-            ALLOWED_ORIGINS=${{secrets.ALLOWED_ORIGINS}}
+            ALLOWED_ORIGINS=${{secrets.ALLOWED_ORIGINS}},localhost:4200
