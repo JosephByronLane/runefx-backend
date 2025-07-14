@@ -30,6 +30,7 @@ jobs:
             docker push ${{ secrets. DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:${{github.sha}}
 
   deploy-cloud-run:
+    needs: docker-build-and-push
     runs-on: 'ubuntu-latest'
     environment: prod
     permissions:
@@ -49,7 +50,7 @@ jobs:
       - name: 'Write env vars file'
         run: |
           cat > env-vars.yaml << EOF
-          
+
 
           EOF
           
