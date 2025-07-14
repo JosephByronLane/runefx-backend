@@ -65,7 +65,7 @@ jobs:
             DB_HOST=${{secrets.DB_HOST}}
             DB_PORT=${{secrets.DB_PORT}}
 
-            PRODUCTION=True
+            PRODUCTION=False
 
             DJANGO_SECRET_KEY=${{secrets.DJANGO_SECRET_KEY}}
 
