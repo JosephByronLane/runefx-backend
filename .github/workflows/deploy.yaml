@@ -29,18 +29,8 @@ jobs:
             docker build . -t  ${{ secrets. DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:latest
             docker push ${{ secrets. DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:latest
 
-  terraform-apply:
+  deploy-cloud-run:
     runs-on: 'ubuntu-latest'
-    env:
-      TF_VAR_aiven_api_token: ${{secrets.AIVEN_API_TOKEN}}
-      TF_VAR_aiven_pg_user_username: ${{ secrets.AIVEN_PG_USER_USERNAME }}
-      TF_VAR_aiven_pg_user_password: ${{ secrets. AIVEN_PG_USER_PASSWORD }}
-      TF_VAR_gcp_rfx_project_id: ${{secrets.GCP_RFX_PROJECT_ID}}
-      TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN}}
-      TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID}}
-      TF_VAR_github_repository_id: ${{ secrets.REPOSITORY_ID}}
-      TF_VAR_gcp_credentials_key: ${{ secrets.GCP_PERMS_KEY}}
-
     environment: prod
     permissions:
       contents: 'read'
@@ -49,24 +39,10 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332' # actions/checkout@v4
-
-      - uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.1.7"
-          terraform_wrapper: false
-        
-      - name: Apply and run Terraform to get variables
-        run: |
-            cd terraform
-            terraform init
-            terraform plan -out tf.plan
-            terraform apply -auto-approve tf.plan
-
-            echo GCP_WIF_PROVIDER_ID=$(terraform output -raw gcp_wif_provider_id) >> $GITHUB_ENV
-            echo GCP_PROJECT_ID=$((terraform output -raw  gcp_project_id) >> $GITHUB_ENV
-
+    
       - name: 'Auth into GCP'
         uses: 'google-github-actions/auth@v2'
         with:
-          project_id: ${{ env.GCP_PROJECT_ID }}
-          workload_identity_provider: ${{ env.GCP_WIF_PROVIDER_ID}}
+          project_id: ${{ secrets.GCP_RFX_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER_ID}}
+
