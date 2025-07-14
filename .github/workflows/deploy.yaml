@@ -59,7 +59,8 @@ jobs:
         run: |
             cd terraform
             terraform init
-            terraform apply -auto-approve
+            terraform plan -out tf.plan
+            terraform apply -auto-approve tf.plan
 
             echo GCP_WIF_PROVIDER_ID=$(terraform output -raw gcp_wif_provider_id) >> $GITHUB_ENV
             echo GCP_PROJECT_ID=$((terraform output -raw  gcp_project_id) >> $GITHUB_ENV
