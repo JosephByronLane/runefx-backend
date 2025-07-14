@@ -4,7 +4,7 @@ import os
 dotenv.load_dotenv()
 
 #misc
-PRODUCTION = os.getenv('PRODUCTION') == False
+PRODUCTION = os.getenv('PRODUCTION', 'False') == 'True'
 
 
 #database

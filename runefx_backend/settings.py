@@ -28,8 +28,6 @@ DEBUG = not config.PRODUCTION
 
 ALLOWED_HOSTS = config.ALLOWED_ORIGINS
 
-print(DEBUG)
-print(ALLOWED_HOSTS)
 # Application definition
 
 INSTALLED_APPS = [
