@@ -1,0 +1,48 @@
+name: 'Build and Deploy to Cloud Run'
+
+on:
+  push:
+    branches:
+      - "feature/terraform"
+      
+
+jobs:
+  deploy:
+    runs-on: 'ubuntu-latest'
+    environment: prod
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332' # actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push to Docker Hub
+        run: |
+            docker build . -t  ${{ secrets. DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:latest
+            docker push ${{ secrets. DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPOSITORY}}:latest
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.1.7"
+          terraform_wrapper: false
+        
+      - name: Apply and run Terraform to get variables
+        run: |
+            terraform init
+            terraform apply -auto-approve
+
+            echo GCP_WIF_PROVIDER_ID=$(terraform output -raw gcp_wif_provider_id) >> $GITHUB_ENV
+            echo GCP_PROJECT_ID=$((terraform output -raw  gcp_project_id) >> $GITHUB_ENV
+
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ env.GCP_WIF_PROVIDER_ID}}
