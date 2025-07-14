@@ -15,4 +15,5 @@ DB_HOST=os.getenv('DB_HOST')
 DB_PORT=os.getenv('DB_PORT')
 
 DJANGO_SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
-ALLOWED_ORIGINS = [host.strip() for host in os.getenv("ALLOWED_ORIGINS", "").split(",") if host.strip()]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "").split(",") if host.strip()]
+CORS_ALLOWED_ORIGINS = [host.strip() for host in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if host.strip()]
