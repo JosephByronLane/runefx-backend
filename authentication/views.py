@@ -109,7 +109,6 @@ class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         #only access to ken is handled in the middleware, refresh tokens need cookie access directly
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-        print(f"Refresh - Token hash: {hash(refresh_token)}")        
         if not refresh_token:
             return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -134,15 +133,13 @@ class CookieTokenRefreshView(TokenRefreshView):
             response.data['message'] = "Token refreshed successfully"
 
         if response.status_code == 401:
-            print(f"NOT AUTHORIZED 401 {response}")
 
-        return super().finalize_response(request, response, *args, **kwargs)
+            return super().finalize_response(request, response, *args, **kwargs)
 
 class CookieTokenLogoutView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
-            print(f"Logout - Token hash: {refresh_token}")
             if not refresh_token:
                 return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -152,8 +149,7 @@ class CookieTokenLogoutView(APIView):
             #no user but we still need to compy with IUser interface on the front-end
             response = Response({"message": "Logout successful", "user":{}}, status=status.HTTP_200_OK)
 
-            print(f"Deleting cookie {settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH']}")
-            print(f"Path: {settings.SIMPLE_JWT['AUTH_COOKIE_PATH']}")
+
             
             # Explicitly set cookies with expiry in the past to force deletion
             response.set_cookie(
