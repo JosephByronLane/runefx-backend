@@ -31,7 +31,6 @@ class TopicSerializer(serializers.ModelSerializer):
     
     def get_posts(self, obj):
         posts = Post.objects.filter(topic=obj.id)
-        print("Posts in topic:", posts)
         return PostSerializer(posts, many=True, context=self.context).data
 
 
