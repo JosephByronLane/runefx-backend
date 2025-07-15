@@ -30,6 +30,8 @@ ALLOWED_HOSTS = config.ALLOWED_HOSTS
 CORS_ALLOWED_ORIGINS = config.CORS_ALLOWED_ORIGINS
 CORS_ALLOW_CREDENTIALS=True
 
+CSRF_TRUSTED_ORIGINS = [origin for origin in config.CORS_ALLOWED_ORIGINS]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -51,6 +53,22 @@ INSTALLED_APPS = [
     'forum',
     'releases',
     'vfx'
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'OPTIONS',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 REST_FRAMEWORK = {
@@ -175,7 +193,3 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200',
-]
